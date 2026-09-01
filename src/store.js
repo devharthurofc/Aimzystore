@@ -92,6 +92,18 @@ function warnThrottled(key, msg) {
   console.warn('[store] ' + msg);
 }
 
+function isSoftSupabaseWriteError(message) {
+  const text = String(message || '').toLowerCase();
+  return (
+    text.includes('row-level security policy') ||
+    text.includes('new row violates row-level security') ||
+    text.includes('permission denied for table') ||
+    text.includes('permission denied for schema') ||
+    text.includes('insufficient privileges') ||
+    text.includes('policy') && text.includes('deny')
+  );
+}
+
 /* Rótulos padrão dos planos fixos (usados ao semear a lista de planos) */
 const PLAN_LABELS = {
   '1h': '1 Hora', '2h': '2 Horas', '3h': '3 Horas', '6h': '6 Horas', '12h': '12 Horas',
@@ -690,16 +702,30 @@ async function pushAllRemote() {
   // Promise.all -> se uma tabela falhava, o erro derrubava o save inteiro
   // e dava a impressão de que "o dashboard zerou".
   const failed = [];
+  const softFailures = [];
   for (const op of ops) {
     try {
       const r = await op.fn();
-      if (r && r.error) failed.push('[' + op.name + '] ' + (r.error.message || 'erro'));
+      if (r && r.error) {
+        const msg = r.error.message || 'erro';
+        failed.push('[' + op.name + '] ' + msg);
+        if (isSoftSupabaseWriteError(msg)) softFailures.push(msg);
+      }
     } catch (e) {
-      failed.push('[' + op.name + '] ' + String(e.message || e));
+      const msg = String(e.message || e);
+      failed.push('[' + op.name + '] ' + msg);
+      if (isSoftSupabaseWriteError(msg)) softFailures.push(msg);
     }
   }
 
   if (failed.length) {
+    if (failed.length === softFailures.length) {
+      warnThrottled(
+        'supabase_rls_soft_fail',
+        '[store] Supabase bloqueado por políticas RLS/permissão — mantendo o espelho local e deixando o banco remoto para correção manual. Rode corrigir-banco.sql no Supabase.'
+      );
+      return;
+    }
     throw new Error('Supabase rejeitou ' + failed.length + ' op(ões): ' + failed.join(' | ').slice(0, 300));
   }
 }
