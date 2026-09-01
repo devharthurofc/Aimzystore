@@ -1,0 +1,20 @@
+{
+  "name": "sensi-pro",
+  "version": "2.0.0",
+  "description": "AIMZY — Gerador de sensibilidade Free Fire com modos FREE / VIP / GERADO VIP e acesso por KEY",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.112.4",
+    "dotenv": "^17.4.2",
+    "express": "^4.19.2",
+    "nodemailer": "^9.0.6",
+    "postgres": "^3.4.9"
+  }
+}

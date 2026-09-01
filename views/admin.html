@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIMZY — Painel Administrativo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#000000;--bg2:#050505;--panel:#050505;--card:rgba(255,255,255,.03);--card-border:rgba(255,255,255,.08);--border:rgba(255,255,255,.08);
+  --red1:#303030;--red2:#404040;--red3:#505050;--blood:#1a1a1a;
+  --text:#ffffff;--muted:#71717A;--ok:#22c55e;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Chakra Petch',sans-serif;min-height:100vh;overflow-x:hidden}
+h1,h2,h3,.font-display{font-family:'Russo One',sans-serif;font-weight:400}
+
+/* ---------- animações globais ---------- */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes glow{0%,100%{box-shadow:0 0 5px rgba(255,255,255,.1)}50%{box-shadow:0 0 20px rgba(255,255,255,.15)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+
+.layout{display:flex;min-height:100vh;animation:fadeIn .5s ease}
+
+/* ---------- sidebar ---------- */
+.sidebar{width:230px;background:var(--panel);border-right:1px solid var(--card-border);display:flex;flex-direction:column;padding:22px 14px;position:sticky;top:0;height:100vh;animation:slideIn .4s ease}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 20px;border-bottom:1px solid var(--card-border);margin-bottom:16px}
+.brand-mark{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;background:rgba(255,255,255,0.08);border:1px solid var(--border);flex-shrink:0;animation:glow 2s infinite}
+.brand-mark svg{width:21px;height:21px}
+.brand h1{font-size:.95rem;line-height:1.1}
+.brand h1 span{color:#ffffff}
+.brand p{font-size:.58rem;color:var(--muted);letter-spacing:.22em;text-transform:uppercase}
+.nav{display:flex;flex-direction:column;gap:4px;flex:1}
+.nav button{
+  appearance:none;border:none;cursor:pointer;text-align:left;font-family:'Chakra Petch',sans-serif;font-weight:600;
+  background:transparent;color:var(--muted);font-size:.92rem;padding:11px 13px;border-radius:12px;display:flex;align-items:center;gap:11px;transition:all .2s ease;letter-spacing:.02em;text-transform:none;position:relative;overflow:hidden
+}
+.nav button::before{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.05),transparent);transition:left .4s ease}
+.nav button:hover::before{left:100%}
+.nav button svg{width:17px;height:17px;flex-shrink:0}
+.nav button:hover{color:var(--text);background:rgba(255,255,255,.05);transform:translateX(3px)}
+.nav button.on{color:#fff;background:rgba(255,255,255,.08);box-shadow:inset 3px 0 0 var(--text)}
+.side-foot{border-top:1px solid var(--card-border);padding-top:12px}
+.badge-role{font-size:.58rem;font-weight:800;letter-spacing:.12em;padding:3px 9px;border-radius:99px;text-transform:uppercase}
+.bg-owner{background:rgba(56,189,248,.14);color:#7dd3fc;border:1px solid rgba(56,189,248,.45)}
+.bg-mod{background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.4)}
+
+/* ---------- conteúdo ---------- */
+.content{flex:1;padding:26px 26px 70px;max-width:1100px;animation:slideUp .5s ease}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.topbar h2{font-size:1.15rem;letter-spacing:.04em}
+.topbar .sub{color:var(--muted);font-size:.85rem;margin-top:3px}
+
+.card{border:1px solid var(--card-border);border-radius:18px;background:var(--card);padding:20px;margin-bottom:18px;transition:all .3s ease;position:relative;overflow:hidden}
+.card::before{content:"";position:absolute;top:0;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--text),transparent);opacity:0;transition:opacity .3s ease}
+.card:hover::before{opacity:.3}
+.card:hover{border-color:rgba(255,255,255,.12);transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,0,0,.3)}
+.card h3.sec{font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.card h3.sec::after{content:"";flex:1;height:1px;background:var(--card-border)}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{border:1px solid var(--card-border);border-radius:14px;padding:16px;position:relative;overflow:hidden;background:rgba(255,255,255,.02);transition:all .3s ease}
+.stat:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.stat b{font-family:'Russo One',sans-serif;font-size:1.7rem;display:block;line-height:1}
+.stat span{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:700;display:block;margin-top:7px}
+.stat::after{content:"";position:absolute;top:0;left:0;width:100%;height:3px;background:linear-gradient(90deg,var(--text),transparent)}
+.stat.revenue{background:rgba(34,197,94,.05)}
+.stat.revenue::after{background:linear-gradient(90deg,#22c55e,transparent)}
+.stat.revenue b{color:#86efac}
+
+label{display:block;font-size:.68rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:12px 0 6px}
+input,select{background:rgba(0,0,0,.35);border:1px solid var(--card-border);border-radius:10px;color:var(--text);padding:11px 12px;font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:.95rem;outline:none;transition:all .2s ease}
+input:focus,select:focus{border-color:var(--text);box-shadow:0 0 12px rgba(255,255,255,.1);transform:scale(1.01)}
+button.act{appearance:none;border:none;cursor:pointer;font-family:'Russo One',sans-serif;letter-spacing:.08em;text-transform:uppercase;font-size:.68rem;padding:12px 16px;border-radius:10px;color:#fff;transition:all .2s ease;position:relative;overflow:hidden}
+button.act::after{content:"";position:absolute;top:50%;left:50%;width:0;height:0;background:rgba(255,255,255,.2);border-radius:50%;transform:translate(-50%,-50%);transition:width .3s ease,height .3s ease}
+button.act:active::after{width:200px;height:200px}
+button.act:hover{filter:brightness(1.15);transform:translateY(-1px)}
+button.act:disabled{opacity:.6;cursor:wait;transform:none}
+.b-red{background:rgba(255,255,255,.1);border:1px solid var(--border)}
+.b-gray{background:rgba(255,255,255,.05);border:1px solid var(--card-border)}
+.b-green{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3)}
+.b-gold{background:rgba(255,255,255,.08);border:1px solid var(--border)}
+.b-purple{background:rgba(255,255,255,.06);border:1px solid var(--border)}
+
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th{text-align:left;color:var(--muted);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;padding:9px 8px;border-bottom:1px solid var(--card-border)}
+td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.05);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr{transition:background .2s ease}
+tr:hover{background:rgba(255,255,255,.03)}
+.badge{font-size:.62rem;font-weight:800;letter-spacing:.1em;padding:4px 9px;border-radius:99px;text-transform:uppercase}
+.bg-ok{background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.4)}
+.bg-off{background:rgba(239,68,68,.13);color:#fca5a5;border:1px solid rgba(239,68,68,.35)}
+.bg-warn{background:rgba(250,204,21,.12);color:#fde047;border:1px solid rgba(250,204,21,.4)}
+.bg-purple{background:rgba(168,85,247,.15);color:#d8b4fe;border:1px solid rgba(168,85,247,.4)}
+.code{font-family:'Russo One',sans-serif;font-size:.74rem;letter-spacing:.05em;color:#fca5a5}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
+.actions button.act{padding:8px 11px;font-size:.6rem}
+.mini-inp{width:110px;padding:8px 9px;font-size:.85rem;border-radius:8px}
+.msg{margin-top:10px;font-weight:700;font-size:.92rem;display:none}
+.msg.show{display:block;animation:slideUp .3s ease}
+.msg.ok{color:#86efac}.msg.err{color:#fca5a5}
+.hint{color:var(--muted);font-size:.82rem;margin-top:8px;line-height:1.5}
+.search-row{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+.search-row input{max-width:280px;width:100%}
+.presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.presets button{appearance:none;cursor:pointer;border:1px solid var(--border);background:rgba(255,255,255,.05);color:var(--text-secondary);border-radius:99px;font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:.72rem;padding:5px 12px;transition:all .2s ease}
+.presets button:hover{background:rgba(255,255,255,.1);transform:scale(1.05)}
+
+/* ---------- toast ---------- */
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,80px);z-index:200;background:#0A0A0A;border:1px solid rgba(34,197,94,.4);color:#86efac;padding:12px 22px;border-radius:13px;font-weight:700;font-size:.9rem;box-shadow:0 12px 34px rgba(0,0,0,.6);transition:.32s cubic-bezier(.22,1,.36,1);max-width:min(480px,90vw)}
+#toast.show{transform:translate(-50%,0)}
+#toast.err{border-color:rgba(239,68,68,.4);color:#fca5a5}
+
+.section{display:none}
+.section.on{display:block;animation:fadeUp .3s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ---------- scrollbar ---------- */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border-hover)}
+
+@media(max-width:900px){
+  .layout{flex-direction:column}
+  .sidebar{width:100%;height:auto;position:static;flex-direction:row;align-items:center;padding:10px 12px;gap:10px;overflow-x:auto;border-right:none;border-bottom:1px solid var(--card-border)}
+  .brand{border:none;margin:0;padding:0;flex-shrink:0}
+  .brand p{display:none}
+  .nav{flex-direction:row;gap:6px}
+  .nav button{white-space:nowrap;padding:9px 12px;font-size:.85rem}
+  .nav button.on{box-shadow:inset 0 -3px 0 var(--text)}
+  .side-foot{border:none;padding:0;margin-left:auto;flex-shrink:0}
+  .content{padding:18px 14px 60px}
+  table{display:block;overflow-x:auto}
+}
+</style>
+<link rel="stylesheet" href="/styles/admin-theme.css">
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></svg>
+      </div>
+      <div style="flex:1">
+        <h1>AIMZY</h1>
+        <p>Admin</p>
+      </div>
+      <div id="notifBell" style="cursor:pointer;position:relative" title="Notificações">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="22" height="22"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        <span id="notifCount" style="display:none;position:absolute;top:-4px;right:-6px;background:var(--text);color:#000;font-size:.65rem;padding:2px 5px;border-radius:10px;font-weight:700">0</span>
+      </div>
+    </div>
+
+    <nav class="nav" id="nav">
+      <button data-sec="dash" class="on">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard</button>
+      <button data-sec="keys">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 2l-2 2m-7.6 7.6a5.5 5.5 0 11-7.8 7.8 5.5 5.5 0 017.8-7.8zm0 0L15 8m-4 4l3-3m4-4l2-2m-2 2l3 3"/></svg>
+        Keys VIP</button>
+      <button data-sec="sales">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        Vendas</button>
+      <button data-sec="prices">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        Preços</button>
+      <button data-sec="reports">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Relatórios</button>
+      <button data-sec="activity">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Atividades</button>
+      <button data-sec="notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        Notificações</button>
+      <button data-sec="users">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        Usuários</button>
+      <button data-sec="mods" id="navMods" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Moderadores</button>
+      <button data-sec="cfg" id="navCfg" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 008 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H2a2 2 0 110-4h.09A1.65 1.65 0 004.6 8a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V2a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Configurações</button>
+      <button data-sec="sec" id="navSec" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+        Segurança</button>
+    </nav>
+
+    <div class="side-foot">
+      <div id="admWho" style="margin-bottom:10px;font-size:.85rem"></div>
+      <button class="b-gray act" id="logoutBtn" style="width:100%">Sair</button>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <!-- DASHBOARD -->
+    <section class="section on" id="sec-dash">
+      <div class="topbar">
+        <div><h2 class="font-display">Dashboard</h2><p class="sub">Visão geral do AIMZY em tempo real.</p></div>
+        <button class="b-gray act" id="refreshBtn">↻ Atualizar</button>
+      </div>
+      <div class="stats" id="statsBox"></div>
+
+      <div class="card" style="margin-top:18px">
+        <h3 class="sec">🟢 Online agora · ativos nos últimos 5 minutos</h3>
+        <div id="onlineList"></div>
+      </div>
+
+      <div class="card" style="margin-top:18px">
+        <h3 class="sec">Atalhos rápidos</h3>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="b-red act" data-go="keys">+ Criar KEY VIP</button>
+          <button class="b-purple act" data-go="sales">+ Registrar Venda</button>
+          <button class="b-gray act" data-go="users">Ver usuários</button>
+          <button class="b-gold act" data-go="cfg" id="goCfgQuick" style="display:none">Configurações</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- KEYS -->
+    <section class="section" id="sec-keys">
+      <div class="topbar">
+        <div><h2 class="font-display">Keys VIP</h2><p class="sub">Gere e gerencie as chaves de acesso dos jogadores.</p></div>
+      </div>
+
+      <div class="card">
+        <h3 class="sec">Nova KEY</h3>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:end">
+          <div><label>Tipo</label>
+            <select class="mini-inp" id="nkType" style="width:auto;padding:9px 10px">
+              <option value="premium">🟦 Premium</option>
+              <option value="proibida">🔴 Proibida</option>
+            </select>
+          </div>
+          <div><label>Dias até expirar</label><input type="number" class="mini-inp" id="nkDays" min="0" placeholder="ex: 30"></div>
+          <div><label>+ Horas</label><input type="number" class="mini-inp" id="nkHours" min="0" placeholder="ex: 12"></div>
+          <div><label>+ Minutos</label><input type="number" class="mini-inp" id="nkMin" min="0" placeholder="ex: 30"></div>
+          <div><label>+ Segundos</label><input type="number" class="mini-inp" id="nkSec" min="0" placeholder="ex: 45"></div>
+          <div><label>Usos permitidos</label><input type="number" class="mini-inp" id="nkUses" min="1" value="1"></div>
+          <button class="b-red act" id="genKeyBtn">+ Gerar nova KEY</button>
+        </div>
+        <div class="presets" id="presets">
+          <button data-d="0" data-h="1" data-m="0" data-s="0">Teste · 1 hora</button>
+          <button data-d="1" data-h="0" data-m="0" data-s="0">1 dia</button>
+          <button data-d="7" data-h="0" data-m="0" data-s="0">7 dias</button>
+          <button data-d="30" data-h="0" data-m="0" data-s="0">30 dias</button>
+          <button data-d="90" data-h="0" data-m="0" data-s="0">90 dias</button>
+          <button data-d="0" data-h="0" data-m="0" data-s="0">Sem expiração</button>
+        </div>
+        <p class="hint">Dica: "Usos permitidos" = quantos dispositivos podem ativar essa KEY. Deixe 1 para uso exclusivo.</p>
+      </div>
+
+      <div class="card">
+        <h3 class="sec">Todas as keys</h3>
+        <div class="search-row">
+          <input id="keySearch" placeholder="🔎 Filtrar keys por código ou jogador...">
+          <button class="b-gray act" id="reloadKeysBtn">Recarregar</button>
+        </div>
+        <table>
+          <thead><tr><th>Código</th><th>Tipo</th><th>Status</th><th>Usos</th><th>Expira</th><th>Ativada por</th><th>Ações</th></tr></thead>
+          <tbody id="keysBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- VENDAS -->
+    <section class="section" id="sec-sales">
+      <div class="topbar">
+        <div><h2 class="font-display">Vendas</h2><p class="sub">Registre e acompanhe as vendas de keys VIP.</p></div>
+      </div>
+
+      <div class="stats" id="salesStatsBox" style="margin-bottom:18px"></div>
+
+      <div class="card">
+        <h3 class="sec">Nova Venda</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px">
+          <div><label>Plano</label>
+            <select class="mini-inp" id="salePlanType" style="width:100%;padding:9px 10px">
+              <option value="premium">Sensi Premium</option>
+              <option value="proibida">Sensi VIP</option>
+            </select>
+          </div>
+          <div><label>Duração</label>
+            <select class="mini-inp" id="salePlanDuration" style="width:100%;padding:9px 10px">
+              <option value="1h">1 Hora</option>
+              <option value="2h">2 Horas</option>
+              <option value="3h">3 Horas</option>
+              <option value="6h">6 Horas</option>
+              <option value="12h">12 Horas</option>
+              <option value="1d">1 Dia</option>
+              <option value="3d">3 Dias</option>
+              <option value="7d">7 Dias</option>
+              <option value="15d">15 Dias</option>
+              <option value="30d">30 Dias</option>
+              <option value="permanent">Permanente</option>
+            </select>
+          </div>
+          <div><label>Valor (R$)</label><input type="number" class="mini-inp" id="salePrice" step="0.01" min="0" placeholder="Automático"></div>
+          <div><label>Nome do cliente</label><input class="mini-inp" id="saleBuyer" style="width:100%" placeholder="ex: João"></div>
+          <div><label>WhatsApp do cliente</label><input class="mini-inp" id="saleContact" style="width:100%" placeholder="+55 (DDD) 9XXXX-XXXX"></div>
+          <div><label>E-mail do cliente (para comprovante)</label><input type="email" class="mini-inp" id="saleEmail" style="width:100%" placeholder="cliente@email.com"></div>
+          <div><label>Código da KEY (opcional)</label><input class="mini-inp" id="saleKey" style="width:100%" placeholder="Gerado ao aprovar"></div>
+          <div><label>Pagamento</label>
+            <select class="mini-inp" id="salePayment" style="width:100%;padding:9px 10px">
+              <option value="pix">Pix</option>
+              <option value="dinheiro">Dinheiro</option>
+              <option value="cartao">Cartão</option>
+              <option value="outro">Outro</option>
+            </select>
+          </div>
+          <div><label>Status</label>
+            <select class="mini-inp" id="saleStatus" style="width:100%;padding:9px 10px">
+              <option value="pago">Pago</option>
+              <option value="pendente">Pendente</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-top:12px">
+          <label>Observações (opcional)</label>
+          <input id="saleNotes" style="width:100%" placeholder="Ex: Venda via WhatsApp, cliente pediu 30 dias...">
+        </div>
+        <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="b-purple act" id="addSaleBtn">+ Registrar venda</button>
+          <span id="salePriceHint" style="color:var(--muted);font-size:.82rem;align-self:center"></span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="sec">Histórico de vendas</h3>
+        <div class="search-row">
+          <input id="saleSearch" placeholder="🔎 Filtrar por cliente, WhatsApp ou KEY...">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select class="mini-inp" id="saleFilterPlan" style="width:auto;padding:8px 10px">
+              <option value="">Todos planos</option>
+              <option value="premium">Premium</option>
+              <option value="proibida">VIP</option>
+            </select>
+            <select class="mini-inp" id="saleFilterStatus" style="width:auto;padding:8px 10px">
+              <option value="">Todos status</option>
+              <option value="pago">Pago</option>
+              <option value="pendente">Pendente</option>
+            </select>
+            <select class="mini-inp" id="saleFilterPayment" style="width:auto;padding:8px 10px">
+              <option value="">Todas formas</option>
+              <option value="pix">Pix</option>
+              <option value="dinheiro">Dinheiro</option>
+              <option value="cartao">Cartão</option>
+              <option value="outro">Outro</option>
+            </select>
+            <button class="b-gray act" id="reloadSalesBtn">Recarregar</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Plano</th><th>Cliente</th><th>WhatsApp</th><th>Key</th><th>Valor</th><th>Pagamento</th><th>Status</th><th>Data</th><th>Ações</th></tr></thead>
+          <tbody id="salesBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- USUÁRIOS -->
+    <section class="section" id="sec-users">
+      <div class="topbar">
+        <div><h2 class="font-display">Usuários</h2><p class="sub">Jogadores registrados no site.</p></div>
+      </div>
+      <div class="card">
+        <div class="search-row">
+          <input id="userSearch" placeholder="🔎 Buscar jogador...">
+          <select class="mini-inp" id="userFilter" style="width:auto;padding:9px 10px">
+            <option value="">Todos</option>
+            <option value="online">🟢 Online agora</option>
+            <option value="logado">Sessão aberta</option>
+            <option value="vip">VIP</option>
+            <option value="free">Free</option>
+          </select>
+          <button class="b-gray act" id="reloadUsersBtn">Recarregar</button>
+        </div>
+        <table>
+          <thead><tr><th>Jogador</th><th>Situação</th><th>VIP</th><th>Origem</th><th>Visto por último</th><th>Ações</th></tr></thead>
+          <tbody id="usersBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- PREÇOS -->
+    <section class="section" id="sec-prices">
+      <div class="topbar">
+        <div><h2 class="font-display">Preços das Keys</h2><p class="sub">Configure os valores de cada plano.</p></div>
+      </div>
+
+      <div class="card">
+        <h3 class="sec">🟦 AIMZY PREMIUM</h3>
+        <p style="color:var(--muted);font-size:.85rem;margin-bottom:14px">Sensibilidade personalizada completa</p>
+        <div id="premiumPricesForm" style="display:grid;gap:10px"></div>
+      </div>
+
+      <div class="card" style="margin-top:14px">
+        <h3 class="sec">🟨 AIMZY VIP</h3>
+        <p style="color:var(--muted);font-size:.85rem;margin-bottom:14px">Acesso total + Modo Proibido</p>
+        <div id="vipPricesForm" style="display:grid;gap:10px"></div>
+      </div>
+
+      <div style="margin-top:14px">
+        <button class="b-green act" id="savePricesBtn">💾 Salvar preços</button>
+      </div>
+      <div class="msg" id="pricesMsg"></div>
+
+      <div class="card" style="margin-top:20px;border-color:rgba(255,255,255,.15)">
+        <h3 class="sec">➕ Cadastrar planos personalizados</h3>
+        <p style="color:var(--muted);font-size:.85rem;margin-bottom:14px">
+          Crie novas opções de duração/preço além das fixas acima. Planos ativos aparecem na página de preços do site.
+        </p>
+        <table>
+          <thead><tr><th>Tipo</th><th>Nome / Duração</th><th>Preço (R$)</th><th>Ativo</th><th>Ações</th></tr></thead>
+          <tbody id="plansBody"></tbody>
+        </table>
+        <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+          <button class="b-gray act" id="addPlanBtn">+ Adicionar plano</button>
+          <button class="b-green act" id="savePlansBtn">💾 Salvar planos</button>
+          <button class="b-gray act" id="reloadPlansBtn">↻ Recarregar</button>
+        </div>
+        <div class="msg" id="plansMsg"></div>
+      </div>
+    </section>
+
+    <!-- RELATÓRIOS -->
+    <section class="section" id="sec-reports">
+      <div class="topbar">
+        <div><h2 class="font-display">Relatórios</h2><p class="sub">Análise de vendas e desempenho.</p></div>
+      </div>
+      <div class="stats" id="reportStats"></div>
+      <div class="card" style="margin-top:18px">
+        <h3 class="sec">📊 Vendas por período</h3>
+        <div id="reportChart"></div>
+      </div>
+      <div class="card" style="margin-top:18px">
+        <h3 class="sec">🏆 Mais vendidos</h3>
+        <div id="reportTop"></div>
+      </div>
+    </section>
+
+    <!-- ATIVIDADES -->
+    <section class="section" id="sec-activity">
+      <div class="topbar">
+        <div><h2 class="font-display">Atividades</h2><p class="sub">Registro de ações realizadas no painel.</p></div>
+        <button class="b-gray act" id="reloadAuditBtn">↻ Atualizar</button>
+      </div>
+      <div class="card">
+        <div id="auditList"></div>
+      </div>
+    </section>
+
+    <!-- NOTIFICAÇÕES -->
+    <section class="section" id="sec-notifications">
+      <div class="topbar">
+        <div><h2 class="font-display">Notificações</h2><p class="sub">Alertas importantes do sistema.</p></div>
+        <button class="b-gray act" id="reloadNotifBtn">↻ Atualizar</button>
+      </div>
+      <div class="card">
+        <div id="notifList"></div>
+      </div>
+    </section>
+
+    <!-- MODERADORES -->
+    <section class="section" id="sec-mods">
+      <div class="topbar">
+        <div><h2 class="font-display">Moderadores</h2><p class="sub">Somente o dono pode gerenciar a equipe.</p></div>
+      </div>
+      <div class="card">
+        <h3 class="sec">Criar moderador</h3>        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:end">
+          <div><label>Usuário do moderador</label><input class="mini-inp" id="modUser" style="width:170px" placeholder="ex: moderador1"></div>
+          <div><label>Senha (min. 8)</label><input class="mini-inp" id="modPass" style="width:170px" type="password" placeholder="senha forte"></div>
+          <button class="b-green act" id="addModBtn">+ Criar moderador</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3 class="sec">Equipe</h3>
+        <table>
+          <thead><tr><th>Usuário</th><th>Cargo</th><th>Criado em</th><th>Ações</th></tr></thead>
+          <tbody id="modsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- CONFIGURAÇÕES -->
+    <section class="section" id="sec-cfg">
+      <div class="topbar">
+        <div><h2 class="font-display">Configurações</h2><p class="sub">Somente o dono pode alterar.</p></div>
+      </div>
+      <div class="card">
+        <h3 class="sec">Site</h3>
+        <label>Link de contato para solicitação de KEY (WhatsApp, Telegram...)</label>
+        <input id="cfgContact" style="width:100%" placeholder="https://wa.me/55DDDNÚMERO?text=...">
+        <label>Endereço fixo do painel administrativo</label>
+        <input style="width:100%" value="/painel-admin" readonly aria-label="Endereço fixo do painel administrativo">
+        <label>Limite diário de gerações da Sensi Normal</label>
+        <input type="number" class="mini-inp" id="cfgLimit" min="0">
+        <div style="margin-top:14px"><button class="b-green act" id="saveCfgBtn">Salvar configurações</button></div>
+        <div class="msg" id="cfgMsg"></div>
+      </div>
+
+      <div class="card">
+        <h3 class="sec">Alterar minha senha</h3>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:end">
+          <div><label>Senha atual</label><input type="password" class="mini-inp" id="pwOld" style="width:170px" autocomplete="current-password"></div>
+          <div><label>Nova senha</label><input type="password" class="mini-inp" id="pwNew" style="width:170px" autocomplete="new-password"></div>
+          <button class="b-green act" id="changePwBtn">Alterar senha</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="sec">📢 Central de Avisos</h3>
+        <p style="color:var(--muted);font-size:.85rem;margin-bottom:12px">Escreva uma mensagem que aparece para todos os usuários ao acessar o site.</p>
+        <div><label>Título</label><input class="mini-inp" id="annTitle" style="width:100%" placeholder="⚠️ Aviso importante"></div>
+        <div style="margin-top:10px"><label>Mensagem</label><textarea id="annMsg" style="width:100%;height:80px;background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px;font-family:inherit;resize:vertical" placeholder="Ex: Manutenção programada hoje às 23h."></textarea></div>
+        <div style="margin-top:10px;display:flex;gap:8px">
+          <button class="b-green act" id="saveAnnBtn">Publicar aviso</button>
+          <button class="b-red act" id="clearAnnBtn">Remover aviso</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEGURANÇA -->
+    <section class="section" id="sec-sec">
+      <div class="topbar">
+        <div><h2 class="font-display">Segurança</h2><p class="sub">Auditoria de acessos e eventos sensíveis.</p></div>
+      </div>
+      <div class="stats" style="margin-bottom:18px">
+        <div class="stat"><b id="fail24" style="color:#fca5a5">0</b><span>logins falhos (24h)</span></div>
+        <div class="stat"><b id="lock24" style="color:#fde047">0</b><span>bloqueios (24h)</span></div>
+      </div>
+      <div class="card">
+        <h3 class="sec">Eventos recentes</h3>
+        <table>
+          <thead><tr><th>Quando</th><th>Evento</th><th>Detalhe</th><th>IP</th></tr></thead>
+          <tbody id="auditBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- MODAL COMPROVANTE -->
+<div id="receiptModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9999;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)closeReceipt()">
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:420px;width:100%;overflow:hidden">
+    <div id="receiptBody" style="padding:20px;font-size:.9rem;line-height:1.8"></div>
+  </div>
+</div>
+
+<!-- MODAL AVISO USUÁRIO -->
+<div id="announceModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9998;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)closeAnnounce()">
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;max-width:400px;width:100%;padding:24px;text-align:center">
+    <div style="font-size:2rem;margin-bottom:12px">📢</div>
+    <h3 id="announceTitle" style="margin-bottom:12px"></h3>
+    <p id="announceMsg" style="color:var(--muted);margin-bottom:20px"></p>
+    <button class="b-red act" onclick="closeAnnounce()">Entendi</button>
+  </div>
+</div>
+
+<div id="toast"><span id="toastMsg"></span></div>
+
+<script src="/admin.js"></script>
+</body>
+</html>
