@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aimzy Stretch — Android</title>
+  <style>
+    :root {
+      --bg: #050505;
+      --bg-soft: #111117;
+      --panel: #15131b;
+      --panel-2: #1d1b28;
+      --line: rgba(124,58,237,0.2);
+      --text: #f5f7ff;
+      --muted: #a1a1aa;
+      --red: #7c3aed;
+      --red-soft: rgba(124,58,237,0.12);
+      --white: #ffffff;
+      --shadow: 0 18px 44px rgba(0,0,0,0.32);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, rgba(124,58,237,0.12), transparent 32%), #050505 35%;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(12px);
+      background: rgba(11,13,18,0.8);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 72px;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      font-size: 1.15rem;
+    }
+
+    .brand .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--red);
+      box-shadow: 0 0 18px rgba(124,58,237,0.8);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .nav-links a {
+      transition: all .2s ease;
+      padding: 8px 10px;
+      border-radius: 10px;
+    }
+
+    .nav-links a:hover { color: var(--white); background: rgba(124,58,237,0.08); }
+
+    .nav-links .active {
+      color: #d8ccff;
+      font-weight: 700;
+      background: rgba(124,58,237,0.08);
+      box-shadow: inset 0 0 0 1px rgba(124,58,237,0.2);
+    }
+
+    .nav-links .cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 18px;
+      background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+      color: #fff;
+      border-radius: 10px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      box-shadow: 0 8px 22px rgba(124,58,237,0.25);
+    }
+
+    .page {
+      padding: 48px 0 80px;
+    }
+
+    .header-box {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(124,58,237,0.08));
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 28px 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      color: #d8ccff;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: inline-block;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      letter-spacing: -0.06em;
+    }
+
+    .subtitle {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 1.08rem;
+      max-width: 760px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+      margin-top: 28px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 22px 18px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform .15s ease, border-color .15s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    .card.recommended {
+      border-color: rgba(124,58,237,0.45);
+      box-shadow: 0 18px 42px rgba(124,58,237,0.14);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-self: flex-start;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.03);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .badge.recomendada {
+      background: rgba(124,58,237,0.10);
+      border-color: rgba(124,58,237,0.35);
+      color: #d8ccff;
+    }
+
+    .resolution {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      margin: 4px 0;
+    }
+
+    .meta {
+      font-size: 0.92rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .meta strong { color: var(--white); }
+
+    .copy-btn {
+      margin-top: auto;
+      width: 100%;
+      border: 1px solid rgba(124,58,237,0.3);
+      background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(139,92,246,0.08));
+      color: var(--text);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-weight: 800;
+      font-size: 0.82rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all .25s ease;
+      box-shadow: 0 10px 22px rgba(124,58,237,0.08);
+    }
+
+    .copy-btn:hover {
+      background: linear-gradient(135deg, rgba(124,58,237,0.18), rgba(139,92,246,0.12));
+      border-color: rgba(124,58,237,0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(124,58,237,0.18);
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translate(-50%, 120px);
+      background: rgba(17,17,17,0.95);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--text);
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-weight: 700;
+      transition: transform .25s ease;
+      box-shadow: var(--shadow);
+      z-index: 100;
+    }
+
+    .toast.show {
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 720px) {
+      .nav-links {
+        gap: 10px 14px;
+        font-size: 0.75rem;
+      }
+      .nav {
+        padding: 10px 0;
+      }
+      .nav-links .cta {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <a href="/" class="brand"><span style="color:#f5f7ff">AIMZY</span> <span style="color:#8b5cf6">STORE</span></a>
+        <span class="dot"></span>
+        <span>AIMZY</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Navegação principal">
+        <a href="/">🏠 Início</a>
+        <a href="/#generator">🎯 Gerador</a>
+        <a href="/stretch/" class="active">📱 Tela Esticada</a>
+        <a href="/emulator/">🖥️ Emulador</a>
+        <a href="/painel-admin">💬 Fale com Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container">
+      <section class="header-box">
+        <span class="eyebrow">Android</span>
+        <h1>Aimzy Stretch — Android</h1>
+        <p class="subtitle">Resoluções esticadas para testar no Free Fire Android.</p>
+      </section>
+
+      <section class="cards">
+        <article class="card">
+          <span class="badge">Leve</span>
+          <div class="resolution">1600 × 720</div>
+          <div class="meta"><strong>Esticamento:</strong> Leve</div>
+          <div class="meta"><strong>Qualidade:</strong> Alta</div>
+          <button class="copy-btn" data-copy="1600 × 720\nEsticamento: Leve\nQualidade: Alta">Copiar resolução</button>
+        </article>
+
+        <article class="card recommended">
+          <span class="badge recomendada">Recomendada</span>
+          <div class="resolution">1520 × 720</div>
+          <div class="meta"><strong>Esticamento:</strong> Médio</div>
+          <div class="meta"><strong>Qualidade:</strong> Alta</div>
+          <button class="copy-btn" data-copy="1520 × 720\nEsticamento: Médio\nQualidade: Alta\nRecomendada">Copiar resolução</button>
+        </article>
+
+        <article class="card">
+          <span class="badge">Alto</span>
+          <div class="resolution">1440 × 720</div>
+          <div class="meta"><strong>Esticamento:</strong> Alto</div>
+          <div class="meta"><strong>Qualidade:</strong> Média/Alta</div>
+          <button class="copy-btn" data-copy="1440 × 720\nEsticamento: Alto\nQualidade: Média/Alta">Copiar resolução</button>
+        </article>
+
+        <article class="card">
+          <span class="badge">Muito alto</span>
+          <div class="resolution">1280 × 720</div>
+          <div class="meta"><strong>Esticamento:</strong> Muito alto</div>
+          <div class="meta"><strong>Qualidade:</strong> Média</div>
+          <button class="copy-btn" data-copy="1280 × 720\nEsticamento: Muito alto\nQualidade: Média">Copiar resolução</button>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <div class="toast" id="toast">✓ Copiado!</div>
+
+  <script>
+    const toast = document.getElementById('toast');
+    function showToast(text) {
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+
+    document.querySelectorAll('.copy-btn').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const text = button.dataset.copy || button.textContent;
+        try {
+          await navigator.clipboard.writeText(text);
+          showToast('✓ Copiado!');
+        } catch (error) {
+          const area = document.createElement('textarea');
+          area.value = text;
+          document.body.appendChild(area);
+          area.select();
+          document.execCommand('copy');
+          area.remove();
+          showToast('✓ Copiado!');
+        }
+      });
+    });
+  </script>
+</body>
+</html>

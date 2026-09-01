@@ -20,19 +20,19 @@
 <link rel="stylesheet" href="/styles/components.css">
 <style>
 :root{
-  --bg:#0a0a0f;
-  --bg2:#0f0f14;
-  --bg-card:#12121a;
-  --card:rgba(18,18,26,0.85);
-  --border:#2a0a0a;
-  --border-hover:#e63946;
+  --bg:#050505;
+  --bg2:#0c0c12;
+  --bg-card:#121117;
+  --card:rgba(18,18,24,0.9);
+  --border:rgba(124,58,237,0.22);
+  --border-hover:#8b5cf6;
   --text:#fff;
-  --text-secondary:#f4f4f8;
-  --text-muted:#b0b0c0;
-  --ok:#e63946;
-  --err:#ff3333;
-  --warn:#ff9900;
-  --accent:#e63946;
+  --text-secondary:#f3f4f6;
+  --text-muted:#a1a1aa;
+  --ok:#7c3aed;
+  --err:#a78bfa;
+  --warn:#c4b5fd;
+  --accent:#7c3aed;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -67,10 +67,11 @@ h1,h2,h3,.font-display{font-weight:700;letter-spacing:-0.02em}
 .nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}
 .nav-brand h1{font-size:1.3rem;letter-spacing:.08em}
 .nav-links{display:flex;align-items:center;gap:28px}
-.nav-links a{color:var(--text-muted);text-decoration:none;font-weight:500;font-size:.9rem;transition:color .2s}
-.nav-links a:hover{color:var(--text)}
-.nav-enter{background:#fff;color:#000;border:none;padding:10px 20px;border-radius:10px;font-weight:700;font-size:.85rem;cursor:pointer;transition:all .2s;letter-spacing:.04em}
-.nav-enter:hover{box-shadow:0 4px 20px rgba(255,255,255,0.2);transform:translateY(-1px)}
+.nav-links a{color:var(--text-muted);text-decoration:none;font-weight:500;font-size:.9rem;transition:all .25s ease;border-radius:10px;padding:8px 10px}
+.nav-links a:hover{color:var(--text);background:rgba(124,58,237,0.08)}
+.nav-links a.active{color:#d8ccff;background:rgba(124,58,237,0.08);box-shadow:inset 0 0 0 1px rgba(124,58,237,0.2)}
+.nav-enter{background:linear-gradient(135deg,#7c3aed,#8b5cf6);color:#fff;border:none;padding:10px 20px;border-radius:10px;font-weight:700;font-size:.85rem;cursor:pointer;transition:all .2s;letter-spacing:.04em;box-shadow:0 6px 20px rgba(124,58,237,0.25)}
+.nav-enter:hover{box-shadow:0 10px 26px rgba(124,58,237,0.32);transform:translateY(-1px)}
 .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;z-index:1001;background:none;border:none;padding:4px}
 .hamburger span{width:22px;height:2px;background:var(--text);transition:all .3s}
 
@@ -79,8 +80,11 @@ header{display:flex;align-items:center;justify-content:space-between;gap:14px;ma
 .logo-mark{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:rgba(255,255,255,0.08);border:1px solid var(--border)}
 .logo-mark svg{width:26px;height:26px}
 .logo h1{font-size:1.45rem;letter-spacing:.06em;line-height:1}
-.logo h1 span{color:var(--text)}
+.logo h1 span{color:#f8f4ff}
 .logo p{font-size:.78rem;color:var(--text-muted);letter-spacing:.25em;text-transform:uppercase}
+.nav-brand h1{font-size:1.3rem;letter-spacing:.08em}
+.nav-brand h1 span{color:#f8f4ff}
+.nav-brand h1{color:#8b5cf6}
 .badges{display:flex;gap:8px;flex-wrap:wrap}
 .chip{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;border-radius:999px;border:1px solid var(--border);background:var(--bg-card);color:var(--text-muted);display:flex;align-items:center;gap:6px}
 .chip i{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok);display:inline-block}
@@ -94,8 +98,8 @@ header{display:flex;align-items:center;justify-content:space-between;gap:14px;ma
   backdrop-filter:blur(10px);transition:.25s;position:relative;overflow:hidden;
   font-family:'Inter',sans-serif;
 }
-.mode-card:hover{transform:translateY(-4px);border-color:var(--border-hover)}
-.mode-card.active{border-color:var(--text);box-shadow:0 0 30px rgba(255,255,255,0.08)}
+.mode-card:hover{transform:translateY(-4px);border-color:var(--border-hover);box-shadow:0 14px 38px rgba(124,58,237,0.14)}
+.mode-card.active{border-color:var(--border-hover);box-shadow:0 0 30px rgba(124,58,237,0.15),inset 0 0 0 1px rgba(124,58,237,0.18)}
 .mode-card .emoji{font-size:1.7rem;display:block;margin-bottom:8px}
 .mode-card h3{font-size:.98rem;letter-spacing:.08em;margin-bottom:5px;color:var(--text)}
 .mode-card p{color:var(--text-muted);font-size:.88rem;line-height:1.35}
@@ -129,8 +133,8 @@ header{display:flex;align-items:center;justify-content:space-between;gap:14px;ma
 
 .btn{appearance:none;border:none;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;font-size:.85rem;padding:16px 26px;border-radius:14px;display:inline-flex;align-items:center;gap:10px;transition:.25s;color:#fff}
 .btn svg{width:15px;height:15px}
-.btn-red{background:#fff;color:#000;box-shadow:0 8px 24px rgba(255,255,255,0.15)}
-.btn-gold{background:var(--text-secondary);color:#000;box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.btn-red{background:linear-gradient(135deg,#7c3aed,#8b5cf6);color:#fff;box-shadow:0 8px 24px rgba(124,58,237,0.28)}
+.btn-gold{background:rgba(124,58,237,0.12);color:#fff;border:1px solid rgba(124,58,237,0.3);box-shadow:0 8px 24px rgba(124,58,237,0.12)}
 .btn-ghost{background:rgba(255,255,255,.05);color:var(--text);border:1px solid var(--border)}
 .btn:hover{filter:brightness(1.1);transform:translateY(-2px)}
 .btn:active{transform:scale(.97)}
@@ -345,14 +349,14 @@ footer b{color:var(--text-secondary)}
 <nav class="navbar" id="navbar">
   <div class="nav-inner">
     <a href="/" class="nav-brand">
-      <h1>AIMZY</h1>
+      <h1><span>AIMZY</span> STORE</h1>
     </a>
     <div class="nav-links">
-      <a href="#generator">Gerador</a>
-      <a href="#plans">Planos</a>
-      <a href="#benefits">Benefícios</a>
-      <a href="#faq">Suporte</a>
-      <a href="#generator" style="color:#e63946;font-weight:800">Criar Conta</a>
+      <a href="/">🏠 Início</a>
+      <a href="#generator">🎯 Gerador</a>
+      <a href="/stretch/">📱 Tela Esticada</a>
+      <a href="/emulator/">🖥️ Emulador</a>
+      <a href="/painel-admin">💬 Fale com Admin</a>
       <button class="nav-enter" id="navEnterBtn">ENTRAR</button>
     </div>
     <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
@@ -426,7 +430,7 @@ footer b{color:var(--text-secondary)}
     <p>Controle total para avançados. Ranqueadas e campeonatos.</p>
   </button>
   <button class="mode-card hud-tab animate-fadeInUp" data-hud="famosos" style="animation-delay:0.4s">
-    <span class="mode-badge" style="background:rgba(255,215,0,.1);color:#ffd700;border-color:rgba(255,215,0,.3)">Famosos</span>
+    <span class="mode-badge" style="background:rgba(124,58,237,.1);color:#d8ccff;border-color:rgba(124,58,237,.3)">Famosos</span>
     <span class="emoji">⭐</span>
     <h3>HUDs de Famosos</h3>
     <p>Layouts de jogadores conhecidos e streamers.</p>
@@ -455,7 +459,7 @@ footer b{color:var(--text-secondary)}
     </button>
     <button class="mode-card hud-filter-btn" data-filter="vip" style="padding:10px 18px;min-width:auto">
       <span class="emoji" style="font-size:1.2rem">⭐</span>
-      <span style="font-weight:700;color:#ffd700">VIP</span>
+      <span style="font-weight:700;color:#d8ccff">VIP</span>
     </button>
   </div>
 

@@ -330,15 +330,15 @@ function initHudTabs() {
       card.style.cursor = isLocked ? "not-allowed" : "pointer";
       
       const vipBadge = isVipHud 
-        ? '<span style="font-size:.55rem;font-weight:800;color:#ffd700;background:rgba(255,215,0,.15);padding:2px 8px;border-radius:99px;border:1px solid rgba(255,215,0,.3);margin-left:8px">⭐ VIP</span>'
+        ? '<span style="font-size:.55rem;font-weight:800;color:#d8ccff;background:rgba(124,58,237,.14);padding:2px 8px;border-radius:99px;border:1px solid rgba(124,58,237,.35);margin-left:8px">⭐ VIP</span>'
         : '<span style="font-size:.55rem;font-weight:800;color:#86efac;background:rgba(34,197,94,.15);padding:2px 8px;border-radius:99px;border:1px solid rgba(34,197,94,.3);margin-left:8px">🆓 FREE</span>';
       
       const lockOverlay = isLocked 
         ? `<div class="hud-lock-overlay" style="position:absolute;inset:0;background:rgba(0,0,0,.85);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:10;padding:20px;text-align:center">
             <div class="lock-icon" style="width:50px;height:50px;border-radius:16px;background:rgba(255,255,255,.1);border:1px solid var(--border);display:grid;place-items:center;margin-bottom:12px">
-              <svg viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round" style="width:24px;height:24px"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#d8ccff" stroke-width="2.5" stroke-linecap="round" style="width:24px;height:24px"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
             </div>
-            <h4 style="color:#ffd700;margin-bottom:6px;font-size:1rem">🔒 HUD VIP</h4>
+            <h4 style="color:#d8ccff;margin-bottom:6px;font-size:1rem">🔒 HUD VIP</h4>
             <p style="color:var(--text-muted);font-size:.85rem;margin-bottom:12px;max-width:280px">Este HUD é exclusivo para usuários VIP. Ative uma KEY Premium ou VIP para desbloquear.</p>
             <button class="btn btn-red btn-sm hud-unlock-btn" data-code="${escapeHtml(hud.code)}" style="min-width:160px">🔓 Desbloquear com KEY</button>
           </div>`

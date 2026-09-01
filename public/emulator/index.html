@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aimzy Stretch — Emulador</title>
+  <style>
+    :root {
+      --bg: #050505;
+      --bg-soft: #111117;
+      --panel: #15131b;
+      --panel-2: #1d1b28;
+      --line: rgba(124,58,237,0.2);
+      --text: #f5f7ff;
+      --muted: #a1a1aa;
+      --red: #7c3aed;
+      --red-soft: rgba(124,58,237,0.12);
+      --accent: #8b5cf6;
+      --shadow: 0 18px 44px rgba(0,0,0,0.32);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, rgba(124,58,237,0.12), transparent 32%), #050505 35%;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(1120px, calc(100% - 32px)); margin: 0 auto; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(12px);
+      background: rgba(11,13,18,0.8);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 72px;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      font-size: 1.15rem;
+    }
+
+    .brand .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--red);
+      box-shadow: 0 0 18px rgba(124,58,237,0.8);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .nav-links a {
+      transition: all .2s ease;
+      padding: 8px 10px;
+      border-radius: 10px;
+    }
+
+    .nav-links a:hover { color: var(--white); background: rgba(124,58,237,0.08); }
+    .nav-links .active { color: #d8ccff; font-weight: 700; background: rgba(124,58,237,0.08); box-shadow: inset 0 0 0 1px rgba(124,58,237,0.2); }
+    .nav-links .cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 18px;
+      background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+      color: #fff;
+      border-radius: 10px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      box-shadow: 0 8px 22px rgba(124,58,237,0.25);
+    }
+
+    .page {
+      padding: 48px 0 80px;
+    }
+
+    .header-box {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(124,58,237,0.08));
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 28px 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      color: #d8ccff;
+      font-size: 0.8rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: inline-block;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      letter-spacing: -0.06em;
+    }
+
+    .subtitle {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 1.08rem;
+      max-width: 760px;
+    }
+
+    .section {
+      margin-top: 32px;
+    }
+
+    .section-title {
+      margin: 0 0 16px;
+      font-size: clamp(1.5rem, 2.8vw, 2.3rem);
+      letter-spacing: -0.05em;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: linear-gradient(180deg, var(--panel), var(--panel-2));
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 22px 18px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: transform .15s ease, border-color .15s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255,255,255,0.2);
+    }
+
+    .card.recommended {
+      border-color: rgba(124,58,237,0.45);
+      box-shadow: 0 18px 42px rgba(124,58,237,0.14);
+    }
+
+    .badge {
+      display: inline-flex;
+      align-self: flex-start;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.03);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .badge.recomendada {
+      background: rgba(124,58,237,0.10);
+      border-color: rgba(124,58,237,0.35);
+      color: #d8ccff;
+    }
+
+    .resolution {
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      margin: 4px 0;
+    }
+
+    .meta {
+      font-size: 0.92rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .meta strong { color: var(--white); }
+
+    .copy-btn {
+      margin-top: auto;
+      width: 100%;
+      border: 1px solid rgba(124,58,237,0.3);
+      background: linear-gradient(135deg, rgba(124,58,237,0.12), rgba(139,92,246,0.08));
+      color: var(--text);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-weight: 800;
+      font-size: 0.82rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all .25s ease;
+      box-shadow: 0 10px 22px rgba(124,58,237,0.08);
+    }
+
+    .copy-btn:hover {
+      background: linear-gradient(135deg, rgba(124,58,237,0.18), rgba(139,92,246,0.12));
+      border-color: rgba(124,58,237,0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(124,58,237,0.18);
+    }
+
+    .generator-panel {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(124,58,237,0.05));
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .title-mini {
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: .12em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .profile-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+      margin-bottom: 18px;
+    }
+
+    .profile-option {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 11px 16px;
+      cursor: pointer;
+      font-weight: 800;
+      letter-spacing: .04em;
+      transition: all .2s ease;
+    }
+
+    .profile-option.selected {
+      background: rgba(124,58,237,0.10);
+      border-color: rgba(124,58,237,0.4);
+    }
+
+    .generate-btn {
+      border: none;
+      background: linear-gradient(135deg, #7c3aed, #8b5cf6);
+      color: #fff;
+      border-radius: 12px;
+      padding: 14px 22px;
+      font-weight: 900;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 18px 34px rgba(124,58,237,0.25);
+      transition: transform .2s ease;
+    }
+
+    .generate-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .result-card {
+      background: rgba(17,17,22,0.9);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 20px;
+      margin-top: 20px;
+      display: none;
+      box-shadow: 0 18px 38px rgba(124,58,237,0.09);
+    }
+
+    .result-card.visible { display: block; }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .result-header h3 {
+      margin: 0;
+      font-size: 1.2rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .copy-config {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .values {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+    }
+
+    .value-box {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 16px;
+    }
+
+    .value-box .name {
+      display: block;
+      font-size: 0.72rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .value-box .num {
+      font-size: clamp(1.3rem, 2.4vw, 2rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 22px;
+    }
+
+    .info-box {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px 18px;
+    }
+
+    .info-box h4 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      letter-spacing: .04em;
+    }
+
+    .info-box p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .history-box {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      margin-top: 22px;
+    }
+
+    .history-box h3 {
+      margin: 0 0 12px;
+      font-size: 1.1rem;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .history-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+
+    .history-item .summary {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .history-item .use-btn {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .warning {
+      margin-top: 24px;
+      border: 1px solid rgba(124,58,237,0.25);
+      background: rgba(124,58,237,0.05);
+      color: #d8ccff;
+      border-radius: 18px;
+      padding: 18px 20px;
+      line-height: 1.7;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translate(-50%, 120px);
+      background: rgba(17,17,17,0.95);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--text);
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-weight: 700;
+      transition: transform .25s ease;
+      box-shadow: var(--shadow);
+      z-index: 100;
+    }
+
+    .toast.show {
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 720px) {
+      .nav-links {
+        gap: 10px 14px;
+        font-size: 0.75rem;
+      }
+      .nav {
+        padding: 10px 0;
+      }
+      .nav-links .cta {
+        display: none;
+      }
+      .top-row {
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container nav">
+      <a href="/" class="brand">
+        <span class="dot"></span>
+        <span>AIMZY</span>
+      </a>
+
+      <nav class="nav-links" aria-label="Navegação principal">
+        <a href="/">🏠 Início</a>
+        <a href="/#generator">🎯 Gerador</a>
+        <a href="/stretch/">📱 Tela Esticada</a>
+        <a href="/emulator/" class="active">🖥️ Emulador</a>
+        <a href="/painel-admin">💬 Fale com Admin</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container">
+      <section class="header-box">
+        <span class="eyebrow">Emulador</span>
+        <h1>Aimzy Stretch — Emulador</h1>
+        <p class="subtitle">Resoluções ideais para Free Fire em emulador e uma ferramenta prática para gerar sensibilidade para PC + emulador + mouse.</p>
+      </section>
+
+      <section class="section">
+        <h2 class="section-title">Resoluções para emulador</h2>
+        <div class="cards">
+          <article class="card recommended">
+            <span class="badge recomendada">Recomendada</span>
+            <div class="resolution">1920 × 1080</div>
+            <div class="meta"><strong>Formato:</strong> 16:9</div>
+            <div class="meta"><strong>Qualidade:</strong> Muito alta</div>
+            <button class="copy-btn" data-copy="1920 × 1080\nFormato: 16:9\nQualidade: Muito alta\nRecomendada para Full HD">Copiar resolução</button>
+          </article>
+
+          <article class="card">
+            <span class="badge">Alta</span>
+            <div class="resolution">1600 × 900</div>
+            <div class="meta"><strong>Formato:</strong> 16:9</div>
+            <div class="meta"><strong>Qualidade:</strong> Alta</div>
+            <button class="copy-btn" data-copy="1600 × 900\nFormato: 16:9\nQualidade: Alta">Copiar resolução</button>
+          </article>
+
+          <article class="card">
+            <span class="badge">Alta</span>
+            <div class="resolution">1440 × 900</div>
+            <div class="meta"><strong>Formato:</strong> 16:10</div>
+            <div class="meta"><strong>Qualidade:</strong> Alta</div>
+            <button class="copy-btn" data-copy="1440 × 900\nFormato: 16:10\nQualidade: Alta">Copiar resolução</button>
+          </article>
+
+          <article class="card">
+            <span class="badge">Média</span>
+            <div class="resolution">1280 × 720</div>
+            <div class="meta"><strong>Formato:</strong> 16:9</div>
+            <div class="meta"><strong>Qualidade:</strong> Média</div>
+            <button class="copy-btn" data-copy="1280 × 720\nFormato: 16:9\nQualidade: Média\nBoa para PCs mais fracos">Copiar resolução</button>
+          </article>
+
+          <article class="card">
+            <span class="badge">Média</span>
+            <div class="resolution">1024 × 768</div>
+            <div class="meta"><strong>Formato:</strong> 4:3</div>
+            <div class="meta"><strong>Qualidade:</strong> Média</div>
+            <button class="copy-btn" data-copy="1024 × 768\nFormato: 4:3\nQualidade: Média\nVisual mais esticado">Copiar resolução</button>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="generator">
+        <h2 class="section-title">Aimzy Emulator Sensi</h2>
+        <div class="generator-panel">
+          <div class="top-row">
+            <div>
+              <div class="title-mini">Gerador de sensibilidade</div>
+              <p style="margin: 8px 0 0; color: var(--muted);">Gerador de sensibilidade para Free Fire em emuladores</p>
+            </div>
+          </div>
+
+          <div class="profile-row" id="profileRow">
+            <button class="profile-option selected" data-profile="low">🟢 Baixa</button>
+            <button class="profile-option" data-profile="medium">🟡 Média</button>
+            <button class="profile-option" data-profile="high">🔴 Alta</button>
+            <button class="profile-option" data-profile="random">🎲 Aleatória</button>
+          </div>
+
+          <button class="generate-btn" id="generateBtn">🎲 Gerar Configuração</button>
+
+          <div class="result-card" id="resultCard">
+            <div class="result-header">
+              <h3>Aimzy Emulator Sensi</h3>
+              <button class="copy-config" id="copyConfigBtn">📋 Copiar configuração</button>
+            </div>
+
+            <div class="values">
+              <div class="value-box">
+                <span class="name">Sensi X</span>
+                <div class="num" id="sensiXVal">0.00</div>
+              </div>
+              <div class="value-box">
+                <span class="name">Sensi Y</span>
+                <div class="num" id="sensiYVal">0.00</div>
+              </div>
+              <div class="value-box">
+                <span class="name">DPI Mouse</span>
+                <div class="num" id="dpiMouseVal">0</div>
+              </div>
+              <div class="value-box">
+                <span class="name">DPI Emulador</span>
+                <div class="num" id="dpiEmuVal">0</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-box">
+            <h4>O que é Sensi X?</h4>
+            <p>Sensibilidade horizontal do mouse/câmera em movimento. Afeta a velocidade de deslocamento lateral.</p>
+          </div>
+
+          <div class="info-box">
+            <h4>O que é Sensi Y?</h4>
+            <p>Sensibilidade vertical do mouse/câmera em movimento. Ajusta a velocidade de movimentação para cima e para baixo.</p>
+          </div>
+
+          <div class="info-box">
+            <h4>O que é DPI do Mouse?</h4>
+            <p>É a sensibilidade física do mouse referente à quantidade de movimento registrada pelo sensor.</p>
+          </div>
+
+          <div class="info-box">
+            <h4>O que é DPI do Emulador?</h4>
+            <p>É a densidade/configuração de DPI aplicada ao ambiente do emulador para controlar a resposta visual e o movimento.</p>
+          </div>
+        </div>
+
+        <div class="warning">
+          <strong>⚠️ Atenção:</strong> As configurações são sugestões e podem variar de acordo com mouse, monitor, resolução, emulador e preferência do jogador. Não existe uma configuração universalmente melhor.
+        </div>
+
+        <div class="history-box">
+          <h3>Histórico</h3>
+          <div class="history-list" id="historyList"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <div class="toast" id="toast">✓ Configuração copiada!</div>
+
+  <script>
+    const CONFIG = {
+      low: {
+        sensiX: [0.20, 0.40],
+        sensiY: [0.18, 0.38],
+        dpiMouse: [1200, 1800],
+        dpiEmulator: [240, 320]
+      },
+      medium: {
+        sensiX: [0.41, 0.65],
+        sensiY: [0.38, 0.62],
+        dpiMouse: [800, 1200],
+        dpiEmulator: [280, 380]
+      },
+      high: {
+        sensiX: [0.66, 1.00],
+        sensiY: [0.60, 0.95],
+        dpiMouse: [400, 800],
+        dpiEmulator: [320, 480]
+      }
+    };
+
+    const toast = document.getElementById('toast');
+    const resultCard = document.getElementById('resultCard');
+    const profileButtons = [...document.querySelectorAll('.profile-option')];
+    const historyList = document.getElementById('historyList');
+    const HISTORY_KEY = 'aimzy-emulator-history';
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function randomBetween(min, max) {
+      return Number((Math.random() * (max - min) + min).toFixed(2));
+    }
+
+    function intBetween(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function getSelectedProfile() {
+      const selected = document.querySelector('.profile-option.selected');
+      return selected ? selected.dataset.profile : 'low';
+    }
+
+    function getRandomProfile() {
+      const profiles = ['low', 'medium', 'high'];
+      return profiles[Math.floor(Math.random() * profiles.length)];
+    }
+
+    function makeProfile(profile) {
+      const base = CONFIG[profile] || CONFIG.medium;
+      const sensiX = randomBetween(base.sensiX[0], base.sensiX[1]);
+      const sensiY = randomBetween(base.sensiY[0], base.sensiY[1]);
+      const dpiMouse = intBetween(base.dpiMouse[0], base.dpiMouse[1]);
+      const dpiEmulator = intBetween(base.dpiEmulator[0], base.dpiEmulator[1]);
+
+      return {
+        profile,
+        sensiX: Number(sensiX.toFixed(2)),
+        sensiY: Number(Math.min(sensiY, 0.99).toFixed(2)),
+        dpiMouse,
+        dpiEmulator
+      };
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+
+    function updateHistory() {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      const list = raw ? JSON.parse(raw) : [];
+      historyList.innerHTML = '';
+
+      if (!list.length) {
+        historyList.innerHTML = '<div class="empty-hint">Nenhuma configuração gerada ainda.</div>';
+        return;
+      }
+
+      list.slice(0, 5).forEach((item) => {
+        const row = document.createElement('div');
+        row.className = 'history-item';
+        row.innerHTML = `
+          <div class="summary">
+            <strong>${item.profileLabel}</strong><br>
+            Sensi X: ${item.sensiX} • Sensi Y: ${item.sensiY}<br>
+            DPI Mouse: ${item.dpiMouse} • DPI Emulador: ${item.dpiEmulator}
+          </div>
+          <button class="use-btn" data-sensi-x="${item.sensiX}" data-sensi-y="${item.sensiY}" data-dpi-mouse="${item.dpiMouse}" data-dpi-emulator="${item.dpiEmulator}">Usar novamente</button>
+        `;
+        historyList.appendChild(row);
+      });
+
+      historyList.querySelectorAll('.use-btn').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const payload = {
+            sensiX: Number(btn.dataset.sensiX),
+            sensiY: Number(btn.dataset.sensiY),
+            dpiMouse: Number(btn.dataset.dpiMouse),
+            dpiEmulator: Number(btn.dataset.dpiEmulator)
+          };
+          renderResult(payload, true);
+        });
+      });
+    }
+
+    function saveHistory(payload, profileLabel) {
+      const raw = localStorage.getItem(HISTORY_KEY);
+      const items = raw ? JSON.parse(raw) : [];
+      items.unshift({ ...payload, profileLabel, createdAt: Date.now() });
+      const trimmed = items.slice(0, 5);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmed));
+      updateHistory();
+    }
+
+    function renderResult(payload, keepHistory = false) {
+      document.getElementById('sensiXVal').textContent = payload.sensiX.toFixed(2);
+      document.getElementById('sensiYVal').textContent = payload.sensiY.toFixed(2);
+      document.getElementById('dpiMouseVal').textContent = payload.dpiMouse;
+      document.getElementById('dpiEmulatorVal').textContent = payload.dpiEmulator;
+      resultCard.classList.add('visible');
+
+      if (!keepHistory) {
+        const label = getSelectedProfile() === 'random' ? 'Aleatória' : getSelectedProfile();
+        saveHistory(payload, label);
+      }
+    }
+
+    document.getElementById('generateBtn').addEventListener('click', () => {
+      let selected = getSelectedProfile();
+      if (selected === 'random') {
+        selected = getRandomProfile();
+      }
+
+      const generated = makeProfile(selected);
+      renderResult(generated, false);
+    });
+
+    profileButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        profileButtons.forEach((el) => el.classList.remove('selected'));
+        button.classList.add('selected');
+      });
+    });
+
+    document.getElementById('copyConfigBtn').addEventListener('click', async () => {
+      const text = [
+        'Aimzy Emulator Sensi',
+        '',
+        `Sensi X: ${document.getElementById('sensiXVal').textContent}`,
+        `Sensi Y: ${document.getElementById('sensiYVal').textContent}`,
+        `DPI Mouse: ${document.getElementById('dpiMouseVal').textContent}`,
+        `DPI Emulador: ${document.getElementById('dpiEmulatorVal').textContent}`
+      ].join('\n');
+
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('✓ Configuração copiada!');
+      } catch (error) {
+        const area = document.createElement('textarea');
+        area.value = text;
+        document.body.appendChild(area);
+        area.select();
+        document.execCommand('copy');
+        area.remove();
+        showToast('✓ Configuração copiada!');
+      }
+    });
+
+    document.querySelectorAll('.copy-btn').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const text = button.dataset.copy || button.textContent;
+        try {
+          await navigator.clipboard.writeText(text);
+          showToast('✓ Copiado!');
+        } catch (error) {
+          const area = document.createElement('textarea');
+          area.value = text;
+          document.body.appendChild(area);
+          area.select();
+          document.execCommand('copy');
+          area.remove();
+          showToast('✓ Copiado!');
+        }
+      });
+    });
+
+    updateHistory();
+  </script>
+</body>
+</html>
