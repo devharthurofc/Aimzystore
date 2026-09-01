@@ -659,11 +659,35 @@
       }
     };
 
+    const PROFILE_LABELS = {
+      low: 'Baixa',
+      medium: 'Média',
+      high: 'Alta',
+      random: 'Aleatória'
+    };
+
     const toast = document.getElementById('toast');
     const resultCard = document.getElementById('resultCard');
     const profileButtons = [...document.querySelectorAll('.profile-option')];
     const historyList = document.getElementById('historyList');
     const HISTORY_KEY = 'aimzy-emulator-history';
+
+    function readHistorySafely() {
+      try {
+        const raw = localStorage.getItem(HISTORY_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function writeHistorySafely(items) {
+      try {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(items));
+      } catch (error) {
+        // no-op if storage is unavailable
+      }
+    }
 
     function clamp(value, min, max) {
       return Math.min(Math.max(value, min), max);
@@ -694,10 +718,13 @@
       const dpiMouse = intBetween(base.dpiMouse[0], base.dpiMouse[1]);
       const dpiEmulator = intBetween(base.dpiEmulator[0], base.dpiEmulator[1]);
 
+      const x = Number(sensiX.toFixed(2));
+      const y = Number(Math.min(sensiY, base.sensiY[1]).toFixed(2));
+
       return {
         profile,
-        sensiX: Number(sensiX.toFixed(2)),
-        sensiY: Number(Math.min(sensiY, 0.99).toFixed(2)),
+        sensiX: x,
+        sensiY: y,
         dpiMouse,
         dpiEmulator
       };
@@ -711,8 +738,7 @@
     }
 
     function updateHistory() {
-      const raw = localStorage.getItem(HISTORY_KEY);
-      const list = raw ? JSON.parse(raw) : [];
+      const list = readHistorySafely();
       historyList.innerHTML = '';
 
       if (!list.length) {
@@ -725,7 +751,7 @@
         row.className = 'history-item';
         row.innerHTML = `
           <div class="summary">
-            <strong>${item.profileLabel}</strong><br>
+            <strong>${item.profileLabel || 'Configuração'}</strong><br>
             Sensi X: ${item.sensiX} • Sensi Y: ${item.sensiY}<br>
             DPI Mouse: ${item.dpiMouse} • DPI Emulador: ${item.dpiEmulator}
           </div>
@@ -748,34 +774,32 @@
     }
 
     function saveHistory(payload, profileLabel) {
-      const raw = localStorage.getItem(HISTORY_KEY);
-      const items = raw ? JSON.parse(raw) : [];
+      const items = readHistorySafely();
       items.unshift({ ...payload, profileLabel, createdAt: Date.now() });
       const trimmed = items.slice(0, 5);
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(trimmed));
+      writeHistorySafely(trimmed);
       updateHistory();
     }
 
     function renderResult(payload, keepHistory = false) {
-      document.getElementById('sensiXVal').textContent = payload.sensiX.toFixed(2);
-      document.getElementById('sensiYVal').textContent = payload.sensiY.toFixed(2);
+      const dpiEmulatorEl = document.getElementById('dpiEmuVal') || document.getElementById('dpiEmulatorVal');
+
+      document.getElementById('sensiXVal').textContent = Number(payload.sensiX).toFixed(2);
+      document.getElementById('sensiYVal').textContent = Number(payload.sensiY).toFixed(2);
       document.getElementById('dpiMouseVal').textContent = payload.dpiMouse;
-      document.getElementById('dpiEmulatorVal').textContent = payload.dpiEmulator;
+      if (dpiEmulatorEl) dpiEmulatorEl.textContent = payload.dpiEmulator;
       resultCard.classList.add('visible');
 
       if (!keepHistory) {
-        const label = getSelectedProfile() === 'random' ? 'Aleatória' : getSelectedProfile();
+        const label = PROFILE_LABELS[getSelectedProfile()] || 'Baixa';
         saveHistory(payload, label);
       }
     }
 
     document.getElementById('generateBtn').addEventListener('click', () => {
       let selected = getSelectedProfile();
-      if (selected === 'random') {
-        selected = getRandomProfile();
-      }
-
-      const generated = makeProfile(selected);
+      const finalProfile = selected === 'random' ? getRandomProfile() : selected;
+      const generated = makeProfile(finalProfile);
       renderResult(generated, false);
     });
 
