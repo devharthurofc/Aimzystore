@@ -320,6 +320,30 @@ footer b{color:var(--text-secondary)}
   .dp-opt,.btn-chip,.cic-chip{flex-direction:row;gap:10px}
   .nav-links{display:none}
   .hamburger{display:flex}
+  .mobile-menu{
+    position:fixed;
+    inset:72px 16px auto 16px;
+    z-index:1001;
+    background:rgba(12,12,18,0.96);
+    border:1px solid var(--border);
+    border-radius:18px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.45);
+    padding:14px;
+    opacity:0;
+    pointer-events:none;
+    transform:translateY(-10px);
+    transition:all .25s ease;
+    backdrop-filter:blur(14px);
+  }
+  .mobile-menu.open{opacity:1;pointer-events:auto;transform:translateY(0)}
+  .mobile-menu a{
+    display:flex;align-items:center;justify-content:flex-start;
+    width:100%;padding:14px 12px;border-radius:12px;color:var(--text);
+    text-decoration:none;border:1px solid transparent;margin-bottom:8px;font-weight:600;
+  }
+  .mobile-menu a:last-child{margin-bottom:0}
+  .mobile-menu a:hover{background:rgba(124,58,237,0.08);border-color:var(--border)}
+  .nav-enter{width:100%;margin-top:8px}
 }
 @media(hover:none){
   .custom-cursor,.cursor-glow{display:none !important}
@@ -362,6 +386,14 @@ footer b{color:var(--text-secondary)}
     <button class="hamburger" id="hamburgerBtn" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="/">🏠 Início</a>
+    <a href="#generator">🎯 Gerador</a>
+    <a href="/stretch/">📱 Tela Esticada</a>
+    <a href="/emulator/">🖥️ Emulador</a>
+    <a href="/painel-admin">💬 Fale com Admin</a>
+    <button class="nav-enter" id="navEnterBtnMobile">ENTRAR</button>
   </div>
 </nav>
 
@@ -917,19 +949,45 @@ window.addEventListener('scroll', function() {
 });
 
 // Hamburger menu
-document.getElementById('hamburgerBtn').addEventListener('click', function() {
-  alert('Menu mobile - Implementar');
-});
+var mobileMenu = document.getElementById('mobileMenu');
+var hamburgerBtn = document.getElementById('hamburgerBtn');
+
+function toggleMobileMenu() {
+  if (!mobileMenu) return;
+  mobileMenu.classList.toggle('open');
+}
+
+if (hamburgerBtn) {
+  hamburgerBtn.addEventListener('click', function() {
+    toggleMobileMenu();
+  });
+}
+
+function closeMobileMenu() {
+  if (mobileMenu) mobileMenu.classList.remove('open');
+}
 
 // Smooth scroll for nav links
-document.querySelectorAll('.nav-links a').forEach(function(link) {
+document.querySelectorAll('.nav-links a, .mobile-menu a').forEach(function(link) {
   link.addEventListener('click', function(e) {
-    e.preventDefault();
-    var target = document.querySelector(this.getAttribute('href'));
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    var href = this.getAttribute('href');
+    if (!href || href === '#') return;
+    if (href.startsWith('#')) {
+      e.preventDefault();
+      var target = document.querySelector(href);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      closeMobileMenu();
+      return;
     }
+    closeMobileMenu();
   });
+});
+
+document.getElementById('navEnterBtnMobile')?.addEventListener('click', function() {
+  closeMobileMenu();
+  document.getElementById('accountChip')?.click();
 });
 
 // Quando a pessoa entra no site, pede o nome automaticamente e rola para o gerador
